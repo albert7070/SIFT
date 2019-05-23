@@ -1,0 +1,8 @@
+#ignore Debug Folder 
+/Debug
+
+#ignore Debug Folder 
+/Release
+
+#ignore Libs Folder 
+/libs

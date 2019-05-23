@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ASCII"?>
+<sdsproject:SDSProject xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sdsproject="http://www.xilinx.com/sdsproject" name="SIFT" location="D:/GITHUB/SDSoC_Sandbox/SIFT" platform="C:\Xilinx\SDx\2018.2\platforms\zcu102-es2-rv-ss-2018-2\zcu102_es2_rv_ss\zcu102_es2_rv_ss.xpfm" platformUID="xilinx:zcu102:zcu102_es2_rv_ss:1.0(custom)" systemProject="SIFT_system" sysConfig="a53_linux" runtime="C/C++" cpu="a53_linux" cpuInstance="" os="linux" ConfigType="Debug">
+  <configuration name="Debug" id="com.xilinx.sdsoc.managedbuild.project.debug.1074664633" dirty="true">
+    <configBuildOptions xsi:type="sdsproject:Option" insertapm="false" gensdcard="true" dmclkid="2" enableHwSwTrace="false" traceApplication="false"/>
+  </configuration>
+  <configuration name="Release" id="com.xilinx.sdsoc.managedbuild.project.release.1541818221">
+    <configBuildOptions xsi:type="sdsproject:Option" insertapm="false" gensdcard="true" dmclkid="2" enableHwSwTrace="false" traceApplication="false">
+      <accelerator name="sift_detect" filepath="src/DetectKeypoints.cpp" clkid="2" location="D:/GITHUB/SDSoC_Sandbox/SIFT/src/DetectKeypoints.cpp"/>
+    </configBuildOptions>
+    <lastBuildOptions xsi:type="sdsproject:Option" insertapm="false" gensdcard="true" dmclkid="2" enableHwSwTrace="false" traceApplication="false">
+      <accelerator name="sift_detect" filepath="src/DetectKeypoints.cpp" clkid="2" location="D:/GITHUB/SDSoC_Sandbox/SIFT/src/DetectKeypoints.cpp"/>
+    </lastBuildOptions>
+  </configuration>
+</sdsproject:SDSProject>
