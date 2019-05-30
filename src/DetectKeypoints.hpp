@@ -16,21 +16,40 @@
 #define CULL_OFFSET CULL_SIZE/2
 
 
+ap_int<16> ABS(ap_int<16> a);
+
+#pragma SDS data access_pattern(pSrcImage:SEQUENTIAL,  pKeypointOut:SEQUENTIAL, pEigenValuesOut:SEQUENTIAL)
+#pragma SDS data copy(pSrcImage[0:WIDTH*HEIGHT],  pKeypointOut[0:WIDTH*HEIGHT], pEigenValuesOut[0:WIDTH*HEIGHT])
+
+#pragma SDS data data_mover(pSrcImage:AXIDMA_SIMPLE, pDupGaussian2:AXIDMA_SIMPLE, pKeypointOut:AXIDMA_SIMPLE)
 
 
-#pragma SDS data access_pattern(pSrcImage:SEQUENTIAL, pDupGaussian2:SEQUENTIAL)
-#pragma SDS data copy(pSrcImage[0:WIDTH*HEIGHT], pDupGaussian2[0:WIDTH*HEIGHT])
-
-#pragma SDS data access_pattern(pGaussian1:SEQUENTIAL, pGaussian2:SEQUENTIAL,  pGaussian3:SEQUENTIAL)
-#pragma SDS data copy(pGaussian1[0:WIDTH*HEIGHT], pGaussian2[0:WIDTH*HEIGHT], pGaussian3[0:WIDTH*HEIGHT])
-
-#pragma SDS data data_mover(pSrcImage:AXIDMA_SIMPLE)
-#pragma SDS data data_mover(pGaussian1:AXIDMA_SIMPLE, pGaussian2:AXIDMA_SIMPLE, pGaussian3:AXIDMA_SIMPLE, pDupGaussian2:AXIDMA_SIMPLE)
 
 void sift_detect(	ap_uint<8>* pSrcImage,
-					ap_uint<8>* pGaussian1,
-					ap_uint<8>* pGaussian2,
-					ap_uint<8>* pGaussian3,
-					ap_uint<8>* pDupGaussian2
+					ap_uint<8>* pKeypointOut,
+					Fixed_t* 	pEigenValuesOut
+
+					);
+
+
+void build_DOG_hls(	hls::stream< Pixel_t > &pSrcImage,
+					hls::stream< Pixel_t > &pGaussian1,
+					hls::stream< Pixel_t > &pGaussian2,
+					hls::stream< Pixel_t > &pGaussian3,
+					hls::stream< ap_int<16> > &pDOG1,
+					hls::stream< ap_int<16> > &pDOG2,
+					hls::stream< ap_int<16> > &pDOG3);
+
+
+void detect_extrema_hls(	hls::stream< ap_int<16> > &pDOG1,
+							hls::stream< ap_int<16> > &pDOG2,
+							hls::stream< ap_int<16> > &pDOG3,
+							hls::stream< ap_uint<8> > &pKeypointMap1,
+							hls::stream< Fixed_t > &pEigenRatio,
+							int contrastTh
 						);
 
+
+Fixed_t IsOnEdge(ap_int<16> window[SUPPRESS_NONMAX_SIZE][SUPPRESS_NONMAX_SIZE]);
+
+bool IsLocalExtremum(ap_int<16> window[N_SCALES][SUPPRESS_NONMAX_SIZE][SUPPRESS_NONMAX_SIZE]);

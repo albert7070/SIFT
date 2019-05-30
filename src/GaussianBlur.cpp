@@ -145,12 +145,15 @@ Pixel_t FilterKernelOperator3(Pixel_t Window[FILTER_SIZE3][FILTER_SIZE3])
 	{
 		for(int iWinCol = 0 ; iWinCol< FILTER_SIZE3; iWinCol++)
 		{
-				value += Window[iWinRow][iWinCol]*GaussianKernel3[iWinCol][iWinRow] ;
+
+			Fixed_t kernelValue = GaussianKernel3[iWinCol][iWinRow];
+			value += Window[iWinRow][iWinCol]*kernelValue ;
 		}
 	}
 
-	int valueInt = RoundToInt(value);		// Matlab's int16() rounds off to nearest integer
+//	int valueInt = RoundToInt(value);		// Matlab's int16() rounds off to nearest integer
 
+	int valueInt = roundf(value);
 
 	if(valueInt <255)						// take care of data overflow.
 		return valueInt;
@@ -182,7 +185,7 @@ void GaussianBlurHLS(	hls::stream< Pixel_t > &SrcImageStream,
 						hls::stream< Pixel_t > &Gaussian1,
 						hls::stream< Pixel_t > &Gaussian2,
 						hls::stream< Pixel_t > &Gaussian3,
-						hls::stream< Pixel_t > &DupGaussian2,
+
 						hls::stream< Pixel_t > &DupImageStream)
 {
 
@@ -289,7 +292,7 @@ L1:	for (int iRow = 0 ; iRow < HEIGHT + FILTER_OFFS3; iRow++ )
 
 				Gaussian1.write(filtOut1);
 				Gaussian2.write(filtOut2);
-				DupGaussian2.write(filtOut2);
+
 				Gaussian3.write(filtOut3);
 				DupImageStream.write(pixelOut);
 
@@ -301,79 +304,7 @@ L1:	for (int iRow = 0 ; iRow < HEIGHT + FILTER_OFFS3; iRow++ )
 
 
 
-#pragma SDS data access_pattern(pSrcImage:SEQUENTIAL,  pGaussian1:SEQUENTIAL,  pGaussian2:SEQUENTIAL,  pGaussian3:SEQUENTIAL)
-#pragma SDS data copy( pSrcImage[0:WIDTH*HEIGHT], pGaussian1[0:WIDTH*HEIGHT], pGaussian2[0:WIDTH*HEIGHT], pGaussian3[0:WIDTH*HEIGHT])
 
-#pragma SDS data access_pattern(pDupGaussian2:SEQUENTIAL,  pDupSrcImage:SEQUENTIAL)
-#pragma SDS data copy( pDupGaussian2[0:WIDTH*HEIGHT], pDupSrcImage[0:WIDTH*HEIGHT])
-
-#pragma SDS data data_mover(pSrcImage:AXIDMA_SIMPLE)
-
-
-void gaussian_blur(	ap_uint<16>* pSrcImage,
-					ap_uint<16>* pGaussian1,
-					ap_uint<16>* pGaussian2,
-					ap_uint<16>* pGaussian3,
-					ap_uint<16>* pDupGaussian2,
-					ap_uint<16>* pDupSrcImage)
-{
-
-#pragma HLS INLINE OFF
-#pragma HLS DATAFLOW
-
-
-	hls::stream< Pixel_t > srcImageStream;
-	hls::stream< Pixel_t > gaussianStream1;
-	hls::stream< Pixel_t > gaussianStream2;
-	hls::stream< Pixel_t > gaussianStream3;
-	hls::stream< Pixel_t > dupGaussianStream2;
-	hls::stream< Pixel_t > dupSrcImageStream;
-
-// populate input image stream
-	for(int i=0; i<HEIGHT*WIDTH;i++)
-	{
-		#pragma HLS LOOP_FLATTEN off
-		#pragma HLS PIPELINE
-
-		Pixel_t PixelIn ;
-
-		PixelIn = pSrcImage[i];
-
-		srcImageStream.write( PixelIn );
-	}
-
-
-// Calling HLS gaussian blur function
-	GaussianBlurHLS(srcImageStream, gaussianStream1, gaussianStream2, gaussianStream3, dupGaussianStream2, dupSrcImageStream );
-
-
-
-	for(int i=0; i<HEIGHT*WIDTH;i++)
-	{
-
-		#pragma HLS PIPELINE
-		#pragma HLS LOOP_FLATTEN off
-
-
-
-		Pixel_t PixelOut = dupSrcImageStream.read();
-
-		Pixel_t GaussPixel1 = gaussianStream1.read();
-		Pixel_t GaussPixel2 = gaussianStream2.read();
-		Pixel_t DupGaussPixel2 = dupGaussianStream2.read();
-		Pixel_t GaussPixel3 = gaussianStream3.read();
-
-
-		pGaussian1[i] = GaussPixel1;
-		pGaussian2[i] = GaussPixel2;
-		pGaussian3[i] = GaussPixel3;
-
-		pDupGaussian2[i] = DupGaussPixel2;
-		pDupSrcImage[i] = PixelOut;
-
-	}
-
-}
 
 
 

@@ -9,11 +9,11 @@
 int main(int argc, char** argv)
 {
 
-	ap_uint<8> *pSrcImage 	= (ap_uint<8>*)sds_alloc(HEIGHT*WIDTH*sizeof(ap_uint<8>) ) ;
-	ap_uint<8>  *pDupGaussian2 	= (ap_uint<8>*)sds_alloc_non_cacheable(HEIGHT*WIDTH*sizeof(ap_uint<8>) ) ;
-	ap_uint<8>  *pGaussian1 	= (ap_uint<8>*)sds_alloc_non_cacheable(HEIGHT*WIDTH*sizeof(ap_uint<8>) ) ;
-	ap_uint<8>  *pGaussian2 	= (ap_uint<8>*)sds_alloc_non_cacheable(HEIGHT*WIDTH*sizeof(ap_uint<8>) ) ;
-	ap_uint<8>  *pGaussian3 	= (ap_uint<8>*)sds_alloc_non_cacheable(HEIGHT*WIDTH*sizeof(ap_uint<8>) ) ;
+	ap_uint<8> *pSrcImage 		= (ap_uint<8>*)sds_alloc(HEIGHT*WIDTH*sizeof(ap_uint<8>) ) ;
+
+	ap_uint<8>  *pKeypointImage = (ap_uint<8>*)sds_alloc(HEIGHT*WIDTH*sizeof(ap_uint<8>) ) ;
+
+	Fixed_t 	*pEigenImage = (Fixed_t*)sds_alloc(HEIGHT*WIDTH*sizeof(Fixed_t) ) ;
 
 	printf("Entering main().. \n");
 
@@ -25,37 +25,43 @@ int main(int argc, char** argv)
 
 	}
 
+	printf("Test Image Read.. \n");
+
 	unsigned long clock_start, clock_end;
 	clock_start = sds_clock_counter();
 
-	sift_detect_and_compute(pSrcImage, pGaussian1, pGaussian2, pGaussian3, pDupGaussian2);
+	sift_detect_and_compute(pSrcImage, pKeypointImage, pEigenImage);
 
 	clock_end = sds_clock_counter();
-	printf("Gaussians Computed in %f ms \n", (1000.0/sds_clock_frequency())*(double)(clock_end-clock_start));
 
-		cv::Mat mGaussian1, mGaussian2, mGaussian3;
-		mGaussian1.create(HEIGHT, WIDTH, CV_8UC1);
-		mGaussian2.create(HEIGHT, WIDTH, CV_8UC1);
-		mGaussian3.create(HEIGHT, WIDTH, CV_8UC1);
+	printf("Eigens and Extremas Computed in %f ms \n", (1000.0/sds_clock_frequency())*(double)(clock_end-clock_start));
+
+		cv::Mat mKeypointImage, mEigenImage ;
+
+		mEigenImage.create(HEIGHT, WIDTH, CV_32F);
+		mKeypointImage.create(HEIGHT, WIDTH, CV_8UC1);
+
 		for(int iRow =  0; iRow < HEIGHT ; iRow++)
 		{
 			for(int iCol = 0 ; iCol < WIDTH; iCol++ )
 			{
-				mGaussian1.at<uchar>(iRow, iCol) = pGaussian1[iRow*WIDTH + iCol];
-				mGaussian2.at<uchar>(iRow, iCol) = pGaussian2[iRow*WIDTH + iCol];
-				mGaussian3.at<uchar>(iRow, iCol) = pGaussian3[iRow*WIDTH + iCol];
+
+				mKeypointImage.at<uchar>(iRow, iCol) = pKeypointImage[iRow*WIDTH + iCol];
+				mEigenImage.at<float>(iRow, iCol) = (float)pEigenImage[iRow*WIDTH + iCol];
 			}
 		}
 
-		cv::imwrite("Gausian1.bmp", mGaussian1);
-		cv::imwrite("Gausian2.bmp", mGaussian2);
-		cv::imwrite("Gausian3.bmp", mGaussian3);
+
+		cv::imwrite("KeypointImageHWSIFT_Tocompare.bmp", mKeypointImage);
 
 
-		sds_free(pDupGaussian2);
-		sds_free(pGaussian1);
-		sds_free(pGaussian2);
-		sds_free(pGaussian3);
+		cv::FileStorage fs;
+
+		fs.open("EigenImage_Tocompare.yml",  cv::FileStorage::WRITE);
+		fs<<"Eigen" << mEigenImage;
+
+		fs.release();
+
 		sds_free(pSrcImage);
 
 }

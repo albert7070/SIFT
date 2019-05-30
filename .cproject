@@ -64,7 +64,7 @@
 								<option id="xilinx.gnu.compiler.symbols.defined.1210977654" name="Defined symbols (-D)" superClass="xilinx.gnu.compiler.symbols.defined" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="HLS_NO_XIL_FPO_LIB"/>
 								</option>
-								<option id="xilinx.gnu.compiler.inferred.swplatform.flags.1710423473" name="Software Platform Inferred Flags" superClass="xilinx.gnu.compiler.inferred.swplatform.flags" value=" -Wno-overloaded-virtual -Wno-unused-label -Wno-strict-overflow -Wno-uninitialized -Wno-unused-function -Wno-unused-variable -Wno-unknown-attributes -Wno-unused-local-typedefs -Wno-sign-compare" valueType="string"/>
+								<option id="xilinx.gnu.compiler.inferred.swplatform.flags.1710423473" name="Software Platform Inferred Flags" superClass="xilinx.gnu.compiler.inferred.swplatform.flags" value=" -hls-target 1 -Wno-overloaded-virtual -Wno-unused-label -Wno-strict-overflow -Wno-uninitialized -Wno-unused-function -Wno-unused-variable -Wno-unknown-attributes -Wno-unused-local-typedefs -Wno-sign-compare" valueType="string"/>
 								<inputType id="com.xilinx.sdsoc.managedbuild.tool.sdspp.input.2210565" name="C++ source files" superClass="com.xilinx.sdsoc.managedbuild.tool.sdspp.input"/>
 							</tool>
 							<tool id="com.xilinx.sdsoc.managedbuild.toolchain.linker.98119173" name="SDS++ Linker" superClass="com.xilinx.sdsoc.managedbuild.toolchain.linker">
@@ -74,7 +74,6 @@
 								</option>
 								<option id="xilinx.gnu.c.link.option.ldflags.476247785" name="Linker Flags" superClass="xilinx.gnu.c.link.option.ldflags" value=" --sysroot=${SYSROOT} -Wl,-rpath-link=${SYSROOT}/lib,-rpath-link=${SYSROOT}/usr/lib -sdcard ../src/data" valueType="string"/>
 								<option id="xilinx.gnu.c.link.option.libs.182307355" name="Libraries (-l)" superClass="xilinx.gnu.c.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="video"/>
 									<listOptionValue builtIn="false" value="opencv_videoio"/>
 									<listOptionValue builtIn="false" value="glib-2.0"/>
 									<listOptionValue builtIn="false" value="drm"/>
@@ -225,4 +224,5 @@
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.pathentry"/>
+	<storageModule moduleId="refreshScope"/>
 </cproject>

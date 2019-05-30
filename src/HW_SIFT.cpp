@@ -4,19 +4,19 @@
 #include "DetectKeypoints.hpp"
 
 
-void sift_detect_and_compute(	ap_uint<8> *pSrcImageCam0, ap_uint<8> *pGaussian1, ap_uint<8> *pGaussian2, ap_uint<8> *pGaussian3, ap_uint<8> *pDupGaussian2)
+void sift_detect_and_compute(	ap_uint<8> *pSrcImageCam0,
+								ap_uint<8> *pKeypointImage,
+								Fixed_t *pEigenImage
+								)
 {
 
 
 
 
 
-#pragma SDS async(1)
-	sift_detect(pSrcImageCam0, pGaussian1, pGaussian2, pGaussian3, pDupGaussian2);
 
+	sift_detect(pSrcImageCam0, pKeypointImage, pEigenImage);
 
-
-	#pragma SDS wait(1)
 
 
 
