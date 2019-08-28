@@ -18,12 +18,14 @@
 
 ap_int<16> ABS(ap_int<16> a);
 
+
+
+
+
 #pragma SDS data access_pattern(pSrcImage:SEQUENTIAL,  pKeypointOut:SEQUENTIAL, pEigenValuesOut:SEQUENTIAL)
 #pragma SDS data copy(pSrcImage[0:WIDTH*HEIGHT],  pKeypointOut[0:WIDTH*HEIGHT], pEigenValuesOut[0:WIDTH*HEIGHT])
 
-#pragma SDS data data_mover(pSrcImage:AXIDMA_SIMPLE, pDupGaussian2:AXIDMA_SIMPLE, pKeypointOut:AXIDMA_SIMPLE)
-
-
+#pragma SDS data data_mover(pSrcImage:AXIDMA_SIMPLE, pKeypointOut:AXIDMA_SIMPLE)
 
 void sift_detect(	ap_uint<8>* pSrcImage,
 					ap_uint<8>* pKeypointOut,

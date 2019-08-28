@@ -17,7 +17,7 @@
 #define FILTER_SIZE3 19
 #define FILTER_OFFS3 FILTER_SIZE3/2
 
-typedef ap_fixed<16,9,AP_RND_ZERO> Mask_t ;
+typedef ap_fixed<16,1,AP_RND_ZERO> Mask_t ;
 
 //typedef Fixed_t Mask_t ;
 

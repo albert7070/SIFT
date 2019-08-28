@@ -97,6 +97,9 @@ Pixel_t FilterKernelOperator1(Pixel_t Window[FILTER_SIZE1][FILTER_SIZE1])
 		}
 	}
 
+
+
+
 	int valueInt = RoundToInt(value);		// Matlab's int16() rounds off to nearest integer
 
 	if(valueInt <255)						// take care of data overflow. This depends on the bit width of Pixel_t
@@ -153,7 +156,7 @@ Pixel_t FilterKernelOperator3(Pixel_t Window[FILTER_SIZE3][FILTER_SIZE3])
 
 //	int valueInt = RoundToInt(value);		// Matlab's int16() rounds off to nearest integer
 
-	int valueInt = roundf(value);
+	int valueInt = RoundToInt(value);
 
 	if(valueInt <255)						// take care of data overflow.
 		return valueInt;
@@ -281,6 +284,29 @@ L1:	for (int iRow = 0 ; iRow < HEIGHT + FILTER_OFFS3; iRow++ )
 
 
 
+				if(iRow == 11 && iCol == 11)
+				{
+					for(int iWinRow = 0 ; iWinRow < FILTER_SIZE1; iWinRow++)
+					{
+						printf("\n" );
+						for(int iWinCol = 0 ; iWinCol< FILTER_SIZE1; iWinCol++)
+						{
+								printf("%d, ", (int)window1[iWinRow][iWinCol]) ;
+
+						}
+						printf("\n" );
+						for(int iWinCol = 0 ; iWinCol< FILTER_SIZE1; iWinCol++)
+						{
+								printf("%f, ", (float)GaussianKernel1[iWinRow][iWinCol]) ;
+
+						}
+						printf("\n" );
+					}
+
+				}
+
+
+
 				filtOut1 = FilterKernelOperator1(window1); //
 
 				filtOut2 = FilterKernelOperator2(window2); //
@@ -292,8 +318,8 @@ L1:	for (int iRow = 0 ; iRow < HEIGHT + FILTER_OFFS3; iRow++ )
 
 				Gaussian1.write(filtOut1);
 				Gaussian2.write(filtOut2);
-
 				Gaussian3.write(filtOut3);
+
 				DupImageStream.write(pixelOut);
 
 			}

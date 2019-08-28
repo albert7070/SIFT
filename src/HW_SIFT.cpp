@@ -11,13 +11,7 @@ void sift_detect_and_compute(	ap_uint<8> *pSrcImageCam0,
 {
 
 
-
-
-
-
 	sift_detect(pSrcImageCam0, pKeypointImage, pEigenImage);
-
-
 
 
 }

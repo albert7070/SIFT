@@ -1,4 +1,4 @@
-
+#include "xf_headers.h"
 #include "DetectKeypoints.hpp"
 
 #include "GaussianBlur.hpp"
@@ -77,6 +77,20 @@ void sift_detect(	ap_uint<8>* pSrcImage,
 // Calling HLS functions
 
 	GaussianBlurHLS(srcImageStream, GaussianStream1, GaussianStream2, GaussianStream3,  DupSrcImageStream);
+
+
+
+		cv::Mat mGaussian1;
+		mGaussian1.create(HEIGHT, WIDTH, CV_8UC1);
+		for(int iRow =  0; iRow < HEIGHT ; iRow++)
+		{
+			for(int iCol = 0 ; iCol < WIDTH; iCol++ )
+			{
+				mGaussian1.at<uchar>(iRow, iCol) = GaussianStream1.read();
+			}
+		}
+
+		cv::imwrite("Gausian1_Arm.bmp", mGaussian1);
 
 	build_DOG_hls(DupSrcImageStream, GaussianStream1, GaussianStream2, GaussianStream3, DOGStream1, DOGStream2, DOGStream3);
 
@@ -379,7 +393,7 @@ Fixed_t IsOnEdge(ap_int<16> window[SUPPRESS_NONMAX_SIZE][SUPPRESS_NONMAX_SIZE])
 	int ry =  SNMX_OFFSET ;
 
 
-	// TODO: check equations :
+	// be careful with equations !!
 	int fxx = window[ry][rx-1] + window[ry][rx+1] - 2*window[ry][rx];
 	int fyy = window[ry-1][rx] + window[ry+1][rx] - 2*window[ry][rx];
 	int fxy = window[ry-1][rx-1] + window[ry+1][rx+1] - window[ry+1][rx-1] - window[ry-1][rx+1];

@@ -9,32 +9,58 @@
 int main(int argc, char** argv)
 {
 
-	ap_uint<8> *pSrcImage 		= (ap_uint<8>*)sds_alloc(HEIGHT*WIDTH*sizeof(ap_uint<8>) ) ;
+	ap_uint<8> *pSrcImageCam0 	= (ap_uint<8>*)sds_alloc(HEIGHT*WIDTH*sizeof(ap_uint<8>) ) ;
 
 	ap_uint<8>  *pKeypointImage = (ap_uint<8>*)sds_alloc(HEIGHT*WIDTH*sizeof(ap_uint<8>) ) ;
 
 	Fixed_t 	*pEigenImage = (Fixed_t*)sds_alloc(HEIGHT*WIDTH*sizeof(Fixed_t) ) ;
 
-	printf("Entering main().. \n");
 
-	cv::Mat mSrcImage = cv::imread("wheat.bmp", CV_LOAD_IMAGE_GRAYSCALE);
 
-	for(int i = 0 ; i < WIDTH*HEIGHT; i++)
+int ImgID = 0 ;
+int nTotalImages = 1;
+
+	while(ImgID<nTotalImages)
 	{
-		pSrcImage[i] = *(mSrcImage.data+i);
 
-	}
 
-	printf("Test Image Read.. \n");
+		std::string strImageID = std::to_string(ImgID)	;
 
-	unsigned long clock_start, clock_end;
-	clock_start = sds_clock_counter();
+		std::string strImagePathCam0 = "Meas2/bot_";
+		std::string strFullImagePathCam0 = strImagePathCam0 + strImageID + "_1.bmp";					// full path of image from cam0
 
-	sift_detect_and_compute(pSrcImage, pKeypointImage, pEigenImage);
+		printf("\n\nReading image %s \n", strFullImagePathCam0.c_str());
+		cv::Mat mSrcImage0 = cv::imread(strFullImagePathCam0, CV_LOAD_IMAGE_GRAYSCALE);					// Read cam0 and cam1 images from file using opencv
 
-	clock_end = sds_clock_counter();
 
-	printf("Eigens and Extremas Computed in %f ms \n", (1000.0/sds_clock_frequency())*(double)(clock_end-clock_start));
+
+		for(int i = 0 ; i < WIDTH*HEIGHT; i++)															// cv::Mat to arrays so that we can feed them to hardware function
+		{
+			pSrcImageCam0[i] = *(mSrcImage0.data+i);
+		}
+
+
+		printf("Detecting Keypoints in Hardware ...\n");
+
+		unsigned long clock_start, clock_end;															// counter to profile the hardware function
+		clock_start = sds_clock_counter();
+
+
+		// SIFT DETECT AND COMPUTE //
+
+		sift_detect_and_compute(pSrcImageCam0, pKeypointImage, pEigenImage);
+
+
+		clock_end = sds_clock_counter();
+
+		printf("Detect and Compute Time = %f ms \n", (1000.0/sds_clock_frequency())*(double)(clock_end-clock_start));
+		printf("Done Processing  .. \n");
+
+
+
+
+
+		printf("Writing gaussians to file : \n");
 
 		cv::Mat mKeypointImage, mEigenImage ;
 
@@ -52,17 +78,44 @@ int main(int argc, char** argv)
 		}
 
 
-		cv::imwrite("KeypointImageHWSIFT_Tocompare.bmp", mKeypointImage);
+
+		std::string strExtremaPath = "SIFT_Test/Extremas/bot_Extrema_";
+		std::string strExtrema = strExtremaPath + strImageID + ".bmp";
+		cv::imwrite(strExtrema, mKeypointImage);
 
 
 		cv::FileStorage fs;
 
-		fs.open("EigenImage_Tocompare.yml",  cv::FileStorage::WRITE);
+		std::string strEigenPath = "SIFT_Test/EigenRatios/bot_Eigen_";
+		std::string strEigen = strEigenPath + strImageID + ".yml";
+
+		fs.open(strEigen,  cv::FileStorage::WRITE);
 		fs<<"Eigen" << mEigenImage;
 
 		fs.release();
 
-		sds_free(pSrcImage);
+
+
+
+
+
+
+
+
+
+
+
+
+		ImgID++;
+	}
+
+
+
+	sds_free(pSrcImageCam0) ;
+	sds_free(pKeypointImage) ;
+	sds_free(pEigenImage) ;
+
+return 0;
 
 }
 
