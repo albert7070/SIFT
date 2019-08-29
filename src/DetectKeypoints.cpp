@@ -78,20 +78,6 @@ void sift_detect(	ap_uint<8>* pSrcImage,
 
 	GaussianBlurHLS(srcImageStream, GaussianStream1, GaussianStream2, GaussianStream3,  DupSrcImageStream);
 
-
-
-		cv::Mat mGaussian1;
-		mGaussian1.create(HEIGHT, WIDTH, CV_8UC1);
-		for(int iRow =  0; iRow < HEIGHT ; iRow++)
-		{
-			for(int iCol = 0 ; iCol < WIDTH; iCol++ )
-			{
-				mGaussian1.at<uchar>(iRow, iCol) = GaussianStream1.read();
-			}
-		}
-
-		cv::imwrite("Gausian1_Arm.bmp", mGaussian1);
-
 	build_DOG_hls(DupSrcImageStream, GaussianStream1, GaussianStream2, GaussianStream3, DOGStream1, DOGStream2, DOGStream3);
 
 	detect_extrema_hls(DOGStream1, DOGStream2, DOGStream3, KeypointMapStream1, pEigenRatioStream2, contrastTh);

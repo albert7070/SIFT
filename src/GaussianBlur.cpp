@@ -284,26 +284,7 @@ L1:	for (int iRow = 0 ; iRow < HEIGHT + FILTER_OFFS3; iRow++ )
 
 
 
-				if(iRow == 11 && iCol == 11)
-				{
-					for(int iWinRow = 0 ; iWinRow < FILTER_SIZE1; iWinRow++)
-					{
-						printf("\n" );
-						for(int iWinCol = 0 ; iWinCol< FILTER_SIZE1; iWinCol++)
-						{
-								printf("%d, ", (int)window1[iWinRow][iWinCol]) ;
 
-						}
-						printf("\n" );
-						for(int iWinCol = 0 ; iWinCol< FILTER_SIZE1; iWinCol++)
-						{
-								printf("%f, ", (float)GaussianKernel1[iWinRow][iWinCol]) ;
-
-						}
-						printf("\n" );
-					}
-
-				}
 
 
 
