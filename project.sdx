@@ -6,12 +6,8 @@
       <accelerator name="sift_detect" filepath="src/DetectKeypoints.cpp" clkid="2" location="D:/GITHUB/khareashish/SDSoC_Sandbox/SIFT/src/DetectKeypoints.cpp"/>
     </lastBuildOptions>
   </configuration>
-  <configuration name="Release" id="com.xilinx.sdsoc.managedbuild.project.release.1541818221" dirty="true">
-    <configBuildOptions xsi:type="sdsproject:Option" insertapm="false" gensdcard="true" dmclkid="2" enableHwSwTrace="false" traceApplication="false">
-      <accelerator name="sift_detect" filepath="src/DetectKeypoints.cpp" clkid="2" location="D:/GITHUB/khareashish/SDSoC_Sandbox/SIFT/src/DetectKeypoints.cpp"/>
-    </configBuildOptions>
-    <lastBuildOptions xsi:type="sdsproject:Option" insertapm="false" gensdcard="true" dmclkid="2" enableHwSwTrace="false" traceApplication="false">
-      <accelerator name="sift_detect" filepath="src/DetectKeypoints.cpp" clkid="2" location="D:/GITHUB/khareashish/SDSoC_Sandbox/SIFT/src/DetectKeypoints.cpp"/>
-    </lastBuildOptions>
+  <configuration name="Release" id="com.xilinx.sdsoc.managedbuild.project.release.1541818221">
+    <configBuildOptions xsi:type="sdsproject:Option" insertapm="false" gensdcard="true" dmclkid="2" enableHwSwTrace="false" traceApplication="false"/>
+    <lastBuildOptions xsi:type="sdsproject:Option" insertapm="false" gensdcard="true" dmclkid="2" enableHwSwTrace="false" traceApplication="false"/>
   </configuration>
 </sdsproject:SDSProject>

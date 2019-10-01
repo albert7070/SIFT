@@ -11,14 +11,17 @@ int main(int argc, char** argv)
 
 	ap_uint<8> *pSrcImageCam0 	= (ap_uint<8>*)sds_alloc(HEIGHT*WIDTH*sizeof(ap_uint<8>) ) ;
 
-	ap_uint<8>  *pKeypointImage = (ap_uint<8>*)sds_alloc(HEIGHT*WIDTH*sizeof(ap_uint<8>) ) ;
+//	ap_uint<8>  *pKeypointImage = (ap_uint<8>*)sds_alloc(HEIGHT*WIDTH*sizeof(ap_uint<8>) ) ;
 
-	Fixed_t 	*pEigenImage = (Fixed_t*)sds_alloc(HEIGHT*WIDTH*sizeof(Fixed_t) ) ;
+	Grad_t 	*pGradientImage = (Grad_t*)sds_alloc(HEIGHT*WIDTH*sizeof(Grad_t) ) ;
+
+
+	Keypoint_t 	*pKeypoints = (Keypoint_t*)sds_alloc(MAX_KEYPOINTS*sizeof(Keypoint_t) ) ;
 
 
 
 int ImgID = 0 ;
-int nTotalImages = 1;
+int nTotalImages = 20;
 
 	while(ImgID<nTotalImages)
 	{
@@ -48,8 +51,9 @@ int nTotalImages = 1;
 
 		// SIFT DETECT AND COMPUTE //
 
-		sift_detect_and_compute(pSrcImageCam0, pKeypointImage, pEigenImage);
+//		sift_detect_and_compute(pSrcImageCam0, pKeypointImage, pEigenImage);
 
+		sift_detect_and_compute(pSrcImageCam0, pGradientImage, pKeypoints, 20);
 
 		clock_end = sds_clock_counter();
 
@@ -62,9 +66,11 @@ int nTotalImages = 1;
 
 		printf("Writing gaussians to file : \n");
 
-		cv::Mat mKeypointImage, mEigenImage ;
+		cv::Mat mKeypointImage, mAngle, mMagn ;
 
-		mEigenImage.create(HEIGHT, WIDTH, CV_32F);
+		mAngle.create(HEIGHT, WIDTH, CV_32SC1);
+		mMagn.create(HEIGHT, WIDTH, CV_32SC1);
+
 		mKeypointImage.create(HEIGHT, WIDTH, CV_8UC1);
 
 		for(int iRow =  0; iRow < HEIGHT ; iRow++)
@@ -72,35 +78,36 @@ int nTotalImages = 1;
 			for(int iCol = 0 ; iCol < WIDTH; iCol++ )
 			{
 
-				mKeypointImage.at<uchar>(iRow, iCol) = pKeypointImage[iRow*WIDTH + iCol];
-				mEigenImage.at<float>(iRow, iCol) = (float)pEigenImage[iRow*WIDTH + iCol];
+//				mKeypointImage.at<uchar>(iRow, iCol) = pKeypointImage[iRow*WIDTH + iCol];
+				mAngle.at<int>(iRow, iCol) = (int)pGradientImage[iRow*WIDTH + iCol].angGrad;
+				mMagn.at<int>(iRow, iCol) = (int)pGradientImage[iRow*WIDTH+ iCol].magGrad;
 			}
 		}
 
 
 
-		std::string strExtremaPath = "SIFT_Test/Extremas/bot_Extrema_";
-		std::string strExtrema = strExtremaPath + strImageID + ".bmp";
-		cv::imwrite(strExtrema, mKeypointImage);
+//		std::string strExtremaPath = "SIFT_Test/FilteredKeypoints/bot_Keypoints_";
+//		std::string strExtrema = strExtremaPath + strImageID + ".bmp";
+//		cv::imwrite(strExtrema, mKeypointImage);
 
 
 		cv::FileStorage fs;
 
-		std::string strEigenPath = "SIFT_Test/EigenRatios/bot_Eigen_";
-		std::string strEigen = strEigenPath + strImageID + ".yml";
+		std::string strAnglePath = "SIFT_Test/Gradients/bot_Angle_";
+		std::string strAngle = strAnglePath + strImageID + ".yml";
 
-		fs.open(strEigen,  cv::FileStorage::WRITE);
-		fs<<"Eigen" << mEigenImage;
+		fs.open(strAngle,  cv::FileStorage::WRITE);
+		fs<<"Angle" << mAngle;
+
+
+
+		std::string strMagPath = "SIFT_Test/Gradients/bot_Mag_";
+		std::string strMag = strMagPath + strImageID + ".yml";
+
+		fs.open(strMag,  cv::FileStorage::WRITE);
+		fs<<"Mag" << mMagn;
 
 		fs.release();
-
-
-
-
-
-
-
-
 
 
 
@@ -112,8 +119,8 @@ int nTotalImages = 1;
 
 
 	sds_free(pSrcImageCam0) ;
-	sds_free(pKeypointImage) ;
-	sds_free(pEigenImage) ;
+	sds_free(pKeypoints) ;
+	sds_free(pGradientImage) ;
 
 return 0;
 

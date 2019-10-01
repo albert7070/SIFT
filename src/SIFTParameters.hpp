@@ -36,10 +36,30 @@
 #define WINDOW_OFFS WINDOW_SIZE/2
 
 
+
+#define FILTER_SIZE1 5
+#define FILTER_OFFS1 FILTER_SIZE1/2
+
+
+#define FILTER_SIZE2 11
+#define FILTER_OFFS2 FILTER_SIZE2/2
+
+
+#define FILTER_SIZE3 19
+#define FILTER_OFFS3 FILTER_SIZE3/2
+
+typedef ap_fixed<16,1,AP_RND_ZERO> Mask_t ;
+
+#define CO_SIZE 3
+#define CO_OFFS CO_SIZE/2
+
+
+
 typedef struct
 {
-	ap_uint<16> x;		// Col
-	ap_uint<16> y;		// Row
+	ap_uint<16> x;				// Col
+	ap_uint<16> y;				// Row
+	ap_uint<32> contrast; 		// Contrast
 
 } Keypoint_t;
 

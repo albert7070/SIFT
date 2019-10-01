@@ -8,6 +8,7 @@
 
 
 void sift_detect_and_compute(	ap_uint<8> *pSrcImageCam0,
-								ap_uint<8> *pKeypointImage,
-								Fixed_t *pEigenImage
+								Grad_t *pGradImage,
+								Keypoint_t *pKeypoint,
+								int contrastTh
 								);

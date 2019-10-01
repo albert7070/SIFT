@@ -1,17 +1,18 @@
 
 #include "HW_SIFT.hpp"
-#include "GaussianBlur.hpp"
 #include "DetectKeypoints.hpp"
 
 
 void sift_detect_and_compute(	ap_uint<8> *pSrcImageCam0,
-								ap_uint<8> *pKeypointImage,
-								Fixed_t *pEigenImage
+								Grad_t *pGradImage,
+								Keypoint_t *pKeypoints,
+								int contrastTh
 								)
 {
 
 
-	sift_detect(pSrcImageCam0, pKeypointImage, pEigenImage);
+
+	sift_detect(pSrcImageCam0, pGradImage, pKeypoints, contrastTh);
 
 
 }
