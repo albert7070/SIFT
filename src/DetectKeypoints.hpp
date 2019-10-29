@@ -60,9 +60,12 @@ void detect_extrema_hls(	hls::stream< ap_int<16> > &pDOG1,
 						);
 
 
-void combine_keypoints_hls(	hls::stream< ap_uint<16> > &pKeypointImage,
-							hls::stream< Keypoint_t > &pKeypoints );
+//void combine_keypoints_hls(	hls::stream< ap_uint<16> > &pKeypointImage,
+//							hls::stream< Keypoint_t > &pKeypoints );
 
+
+void combine_keypoints_hls(	hls::stream< ap_uint<16> > &pKeypointImage,
+							hls::stream< ap_uint<8> > &pKeypointsOutImage );
 
 void build_DOG_hls(	hls::stream< Pixel_t > &pSrcImage,
 					hls::stream< Pixel_t > &pGaussian1,
@@ -84,11 +87,20 @@ bool IsBestKeypoint(Fixed_t EigWindow[CULL_SIZE][CULL_SIZE], ap_uint<16> KPWindo
 
 
 
-#pragma SDS data access_pattern(pSrcImage:SEQUENTIAL, pGradients:SEQUENTIAL)
-#pragma SDS data copy(pSrcImage[0:WIDTH*HEIGHT], pGradients[0:WIDTH*HEIGHT])
+#pragma SDS data access_pattern(pSrcImage:SEQUENTIAL)
+#pragma SDS data copy(pSrcImage[0:WIDTH*HEIGHT])
+
+#pragma SDS data access_pattern(pKeypointImage:SEQUENTIAL)
+#pragma SDS data copy( pKeypointImage[0:WIDTH*HEIGHT])
+
+//#pragma SDS data access_pattern(pEigenRatioImage:SEQUENTIAL)
+//#pragma SDS data copy( pEigenRatioImage[0:WIDTH*HEIGHT])
 
 #pragma SDS data access_pattern(pKeypoints:SEQUENTIAL)
 #pragma SDS data copy( pKeypoints[0:MAX_KEYPOINTS])
+
+#pragma SDS data access_pattern(pGradients:SEQUENTIAL)
+#pragma SDS data copy( pGradients[0:WIDTH*HEIGHT])
 
 #pragma SDS data data_mover(pKeypoints:AXIDMA_SIMPLE)
 //#pragma SDS data data_mover(pSrcImage:AXIDMA_SIMPLE)

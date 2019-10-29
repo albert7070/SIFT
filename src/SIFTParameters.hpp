@@ -19,7 +19,9 @@
 
 #define N_SCALES 3						// Number of scales used in the SIFT detector
 
-#define MAX_KEYPOINTS 1000				// Maximum number of keypoints. This has to be a fixed number as FPGA cannot dynamically allocate memmory
+#define MAX_KEYPOINTS 10000				// Maximum number of keypoints. This has to be a fixed number as FPGA cannot dynamically allocate memmory
+
+#define MAX_FINAL_KEYPOINTS 1000
 
 #define DESC_SIZE 72    				// Descriptor size is the total number of elements in each descriptor
 
@@ -34,6 +36,25 @@
 #define RADIUS WINDOW_SIZE/2;
 
 #define WINDOW_OFFS WINDOW_SIZE/2
+
+
+
+
+
+#define MASK_SIZE 25					// Circular Mask Size for cam0
+
+#define MASK_SIZE_1 29					// Circular Mask Size for cam1
+
+#define WINDOW_SIZE 71
+#define RADIUS WINDOW_SIZE/2;
+#define WINDOW_OFFS WINDOW_SIZE/2
+
+
+#define DESC_WIN_SIZE_1 81
+#define DESC_RADIUS_1 DESC_WIN_SIZE_1/2;
+#define DESC_WIN_OFFS_1 DESC_WIN_SIZE_1/2
+
+
 
 
 

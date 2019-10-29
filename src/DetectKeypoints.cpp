@@ -195,6 +195,7 @@ L1:	for (int iRow = 0 ; iRow < HEIGHT + SNMX_OFFSET; iRow++ )
 
 				Fixed_t bKeypointEigenRatio = IsOnEdge(Window);						// Check if the keypoint is on edge - based on eigen ratio
 
+//				Fixed_t bKeypointEigenRatio = 1;
 
 				if(!bKeypointDetected || (bKeypointEigenRatio == -1 || bIsLowContrastPoint)) 	// if keypoint is not detected OR it does not satisfy the eigen and contrast thresholds then its not a valid keypoint
 					kpOut = 0 ;
@@ -395,12 +396,11 @@ void combine_keypoints_hls(	hls::stream< ap_uint<16> > &pKeypointImage,
 					valueOut = 0 ;
 				else
 					valueOut = value;
+				//valueOut = 255;
 
 			}
 			else
 				valueOut = 0 ;
-
-
 
 			if(valueOut > 0)
 				nKeypointsTotal++;
@@ -440,6 +440,61 @@ void combine_keypoints_hls(	hls::stream< ap_uint<16> > &pKeypointImage,
 
 
 
+
+// ========================== new function for debug =========================== //
+
+
+
+
+/*
+
+void combine_keypoints_hls(	hls::stream< ap_uint<16> > &pKeypointImage,
+							hls::stream< ap_uint<8> > &pKeypointsOutImage )
+{
+
+
+	int nKeypoints = 0 ;
+	int idx = 0;
+
+	int nKeypointsTotal = 0 ;
+
+	for(int iRow = 0 ; iRow < HEIGHT ; iRow++ )
+	{
+		for(int iCol = 0 ; iCol < WIDTH; iCol++)
+		{
+#pragma HLS PIPELINE II = 1
+
+			ap_uint<16> value = pKeypointImage.read();
+
+
+			ap_uint<16> valueOut = 0 ;
+
+			if((iRow > WINDOW_SIZE && iCol > WINDOW_SIZE)&&(iRow< HEIGHT - WINDOW_SIZE && iCol < WIDTH - WINDOW_SIZE)  )	// this is to tackle borders.
+			{
+				if(value == 0  )
+					valueOut = 0 ;
+				else
+					valueOut = 255;
+					//valueOut = value;
+
+			}
+			else
+				valueOut = 0 ;
+
+
+
+			pKeypointsOutImage.write(valueOut);
+
+		}
+	}
+
+
+
+}
+*/
+
+
+// ============================================================================= //
 
 
 
@@ -615,20 +670,27 @@ L1:	for (int iRow = 0 ; iRow < HEIGHT + CULL_OFFSET; iRow++ )
 			{
 
 
-				bool bKeypointDetected ;
+				bool bKeypointDetected = 0 ;
 
 				ap_uint<16> centerPixel = Window[CULL_OFFSET][CULL_OFFSET];
+				Fixed_t centerEigenRatio = WindowSrc[CULL_OFFSET][CULL_OFFSET];
+
 
 				bKeypointDetected  = IsBestKeypoint(WindowSrc, Window);
 
+
 				ap_uint<16> pixOut ;
 
-				if (centerPixel >0 && bKeypointDetected > 0)								// if center pixel is more than zero it means this is a valid keypoint
-					pixOut = centerPixel;													// now check if center of the window is maximum, if max. its a good keypoint
+				if (centerPixel >0  && bKeypointDetected > 0  )			// if center pixel is more than zero it means this is a valid keypoint
+				{
+					pixOut = centerPixel;							// now check if center of the window is maximum, if max. its a good keypoint
+
+				}
 				else
 					pixOut = 0 ;
 
-				pKeypointOut.write(centerPixel);											// output will be 	- 0 if not a good keypoint
+
+				pKeypointOut.write(pixOut);											// output will be 	- 0 if not a good keypoint
 																							//				  	- ABS(contrast) if a good keypoint
 
 			}
@@ -653,7 +715,7 @@ bool IsBestKeypoint(Fixed_t EigWindow[CULL_SIZE][CULL_SIZE], ap_uint<16> KPWindo
 
 
 	local_minima = 1;
-
+//int iTest = 0 ;
 
 //printf("\n\nEigen Ratio Matrix: \n");
 	for(int i = 0 ; i< CULL_SIZE; i++ )
@@ -663,14 +725,23 @@ bool IsBestKeypoint(Fixed_t EigWindow[CULL_SIZE][CULL_SIZE], ap_uint<16> KPWindo
 //			printf("%f, ",(float) EigWindow[i][j]);
 //			printf("%d,\t ",(int) KPWindow[i][j]);
 
-			if(KPWindow[i][j] != 0 && (i!=CULL_OFFSET && j!=CULL_OFFSET ))
+			if(KPWindow[i][j] != 0 && !(i==CULL_OFFSET && j==CULL_OFFSET ))
+			{
 				local_minima = local_minima&&(centerPixel < EigWindow[i][j]);			// centerPixel here is the eigen ratio value for the keypoint
+			}
+
 		}
 //		printf("\n");
 	}
 
 
-	extrema = local_minima ;
+
+
+		extrema = local_minima ;
+
+
+
+
 
 return extrema ;
 
@@ -774,10 +845,10 @@ Pixel_t FilterKernelOperator1(Pixel_t Window[FILTER_SIZE1][FILTER_SIZE1])
 
 	int valueInt = RoundToInt(value);		// Matlab's int16() rounds off to nearest integer
 
-	if(valueInt <1024)						// take care of data overflow. This depends on the bit width of Pixel_t
+	if(valueInt <255)						// take care of data overflow. This depends on the bit width of Pixel_t
 		return valueInt;
 	else
-		return 1024;
+		return 255;
 }
 
 
@@ -807,10 +878,10 @@ Pixel_t FilterKernelOperator2(Pixel_t Window[FILTER_SIZE2][FILTER_SIZE2])
 	int valueInt = RoundToInt(value);		// Matlab's int16() rounds off to nearest integer
 
 
-	if(valueInt <1024)						// take care of data overflow.
+	if(valueInt <255)						// take care of data overflow.
 		return valueInt;
 	else
-		return 1024;
+		return 255;
 }
 
 
@@ -834,10 +905,10 @@ Pixel_t FilterKernelOperator3(Pixel_t Window[FILTER_SIZE3][FILTER_SIZE3])
 	int valueInt = RoundToInt(value);		// Matlab's int16() rounds off to nearest integer
 
 
-	if(valueInt <1024)						// take care of data overflow.
+	if(valueInt <255)						// take care of data overflow.
 		return valueInt;
 	else
-		return 1024;
+		return 255;
 }
 
 
@@ -980,11 +1051,20 @@ L1:	for (int iRow = 0 ; iRow < HEIGHT + FILTER_OFFS3; iRow++ )
 // ============================================================================================ //
 
 
-#pragma SDS data access_pattern(pSrcImage:SEQUENTIAL, pGradients:SEQUENTIAL)
-#pragma SDS data copy(pSrcImage[0:WIDTH*HEIGHT], pGradients[0:WIDTH*HEIGHT])
+#pragma SDS data access_pattern(pSrcImage:SEQUENTIAL)
+#pragma SDS data copy(pSrcImage[0:WIDTH*HEIGHT])
+
+#pragma SDS data access_pattern(pKeypointImage:SEQUENTIAL)
+#pragma SDS data copy( pKeypointImage[0:WIDTH*HEIGHT])
+
+//#pragma SDS data access_pattern(pEigenRatioImage:SEQUENTIAL)
+//#pragma SDS data copy( pEigenRatioImage[0:WIDTH*HEIGHT])
 
 #pragma SDS data access_pattern(pKeypoints:SEQUENTIAL)
 #pragma SDS data copy( pKeypoints[0:MAX_KEYPOINTS])
+
+#pragma SDS data access_pattern(pGradients:SEQUENTIAL)
+#pragma SDS data copy( pGradients[0:WIDTH*HEIGHT])
 
 #pragma SDS data data_mover(pKeypoints:AXIDMA_SIMPLE)
 //#pragma SDS data data_mover(pSrcImage:AXIDMA_SIMPLE)
@@ -1001,21 +1081,25 @@ void sift_detect(	ap_uint<8>* pSrcImage,
 #pragma HLS DATAFLOW
 
 
-	hls::stream< Pixel_t > srcImageStream;
-	hls::stream< Pixel_t > DupSrcImageStream;
-	hls::stream< Pixel_t > GaussianStream1;
-	hls::stream< Pixel_t > GaussianStream2;
-	hls::stream< Pixel_t > GaussianStream3;
-	hls::stream< Pixel_t > DupGaussianStream2;
+	hls::stream< Pixel_t > srcImageStream("SrcImageStream");
+	hls::stream< Pixel_t > DupSrcImageStream("DupGaussianStream");
+	hls::stream< Pixel_t > GaussianStream1("GaussianStream1");
+	hls::stream< Pixel_t > GaussianStream2("GaussianStream2");
+	hls::stream< Pixel_t > GaussianStream3("GaussianStream3");
+	hls::stream< Pixel_t > DupGaussianStream2("DupGaussianStream2");
 
-	hls::stream< ap_int<16> > DOGStream1;
-	hls::stream< ap_int<16> > DOGStream2;
-	hls::stream< ap_int<16> > DOGStream3;
+	hls::stream< ap_int<16> > DOGStream1("DOGStream1");
+	hls::stream< ap_int<16> > DOGStream2("DOGStream2");
+	hls::stream< ap_int<16> > DOGStream3("DOGStream3");
 
-	hls::stream< ap_uint<16> > KeypointMapStream1;
-	hls::stream< Fixed_t > pEigenRatioStream2;
+	hls::stream< ap_uint<16> > KeypointMapStream1("KeypointMapStream1");
+	hls::stream< ap_uint<16> > KeypointMapStream2("KeypointMapStream2");
+//	hls::stream< ap_uint<8> > KeypointMapStream3("KeypointMapStream3");
 
-	hls::stream< ap_uint<16> > KeypointMapStream2;
+
+	hls::stream< Fixed_t > pEigenRatioStream2("EigenRatioStream2");
+
+
 
 	hls::stream< Keypoint_t > KeypointStream;
 
@@ -1050,18 +1134,30 @@ void sift_detect(	ap_uint<8>* pSrcImage,
 
 	culling_hls(KeypointMapStream1, pEigenRatioStream2, KeypointMapStream2);
 
+
 	combine_keypoints_hls(KeypointMapStream2, KeypointStream);
 
 	ComputeGradientsHLS(DupGaussianStream2, GradientStream);
+
 
 	for(int i=0; i<HEIGHT*WIDTH;i++)
 	{
 		#pragma HLS LOOP_FLATTEN off
 		#pragma HLS PIPELINE
 
-		Grad_t Grad2Out = GradientStream.read();
+//		ap_uint<8> KPOut = KeypointMapStream2.read();
 
-		pGradients[i] = Grad2Out;
+//		Fixed_t EigenOut = pEigenRatioStream2.read();
+
+		Grad_t GradOut ;
+
+		GradOut = GradientStream.read();
+
+
+//		pKeypointImage[i] = KPOut;
+//		pEigenRatioImage[i] = EigenOut;
+		pGradients[i] = GradOut;
+
 
 	}
 
@@ -1094,10 +1190,10 @@ Grad_t ComputeGradientKernel(Pixel_t Window[CO_SIZE][CO_SIZE])
 	ap_int<16> grady = Window[CO_OFFS + 1][CO_OFFS] - Window[CO_OFFS - 1][CO_OFFS] ;
 
 
-	int gradx_sq = gradx*gradx;
-	int grady_sq = grady*grady;
+	float gradx_sq = gradx*gradx;
+	float grady_sq = grady*grady;
 
-	int mag = sqrt(gradx_sq + grady_sq);
+	float mag = sqrt(gradx_sq + grady_sq);
 
 	ap_int<16> maggrad = mag ;
 
